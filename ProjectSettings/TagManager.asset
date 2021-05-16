@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Enemy
   - PlayerMovePoint
+  - Enemies
+  - Exit
+  - Obstacles
+  - Interactables
   layers:
   - Default
   - TransparentFX
@@ -18,10 +22,10 @@ TagManager:
   - Player
   - Enemy
   - Bushes
-  - 
-  - 
-  - 
-  - 
+  - Obstacles
+  - Post Processing
+  - Exit
+  - Interactables
   - 
   - 
   - 
