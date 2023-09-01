@@ -5,6 +5,7 @@ using Pathfinding;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class GameController : MonoBehaviour
     public static GameController instance = null;
     public int turnCounter = 0;
 
+    public static int playerScore = 0;
     [HideInInspector] public bool playersTurn = true;
     private bool isPlayerHidden;
 
@@ -21,6 +23,11 @@ public class GameController : MonoBehaviour
     private BoardGenerator board;
     public Text levelText;
 
+    [SerializeField] private GameObject gameOverPanel;
+    public TextMeshProUGUI playerHealthText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI scoreTextGameOver;
+    [SerializeField] private TextMeshProUGUI highScoreText;
 
     [HideInInspector] public UnityEvent m_TurnEvent;
 
@@ -112,12 +119,49 @@ public class GameController : MonoBehaviour
     private void InitGame()
     {
         playersTurn = false;
+        UpdateScoreUI();
         board = FindObjectOfType<BoardGenerator>();
         enemies = new List<EnemyPathfinding>();
         board.SetupScene(level);
         levelText.text = "Level: " + level;
         Debug.Log("LOADING LEVEL " + level);
         Invoke("HideLevelImage", levelStartDelay);
+    }
+
+    public void UpdateScoreUI()
+    {
+        scoreText.text = "Score:\n" + playerScore;
+        scoreTextGameOver.text = "Score: " + playerScore;
+
+        if (playerScore > PlayerPrefs.GetInt("HighScore", 0))
+        {
+            PlayerPrefs.SetInt("HighScore", playerScore);
+            PlayerPrefs.Save();
+            highScoreText.text = "High Score:\n" + playerScore;
+        }
+        else
+        {
+            highScoreText.text = "High Score:\n" + PlayerPrefs.GetInt("HighScore", 0);
+        }
+    }
+
+    public void UpdateHealthUI(int health, int maxHealth)
+    {
+        playerHealthText.text = $"HP\n{health}/{maxHealth}";
+    }
+
+    public void GameOver()
+    {
+        UpdateScoreUI();
+        playerScore = 0;
+        gameOverPanel.SetActive(true);
+    }
+
+    public void RestartClicked()
+    {
+        gameOverPanel.SetActive(false);
+        level = 1;
+        InitGame();
     }
 
     private void HideLevelImage()

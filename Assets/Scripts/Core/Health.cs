@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,17 +18,24 @@ public class Health : MonoBehaviour
 
     public HealthBar healthBar;
 
+    public bool isPlayer = false;
+    public bool isAlive = true;
+
     private void Start()
     {
         maxHealth = health;
-        if(gameObject.tag == "Player")
+        isAlive = true;
+        if (gameObject.tag == "Player")
         {
+            isPlayer = true;
             healthBar = GameObject.FindWithTag("Player").GetComponent<HealthBar>();
+            FindObjectOfType<GameController>().UpdateHealthUI(health, maxHealth);
             healthBar.SetMaxHealth(health);
         }
         else
         {
             //enemy
+            isPlayer = false;
             healthBar.SetMaxHealth(health);
         }
         
@@ -48,11 +56,23 @@ public class Health : MonoBehaviour
         StartCoroutine(IndicateDamage(originalSprite));
         GetComponent<SpriteRenderer>().sprite = damageSprite;
 
+        if(isPlayer)
+        {
+            FindObjectOfType<GameController>().UpdateHealthUI(health, maxHealth);
+        }
+
         if (health <= 0)
         {
             //dead
             Instantiate(bloodParticles, gameObject.transform.position, Quaternion.identity);
             Destroy(gameObject, damageDelay);
+            isAlive = false;
+
+            if (!isPlayer)
+            {
+                GameController.playerScore += GetComponent<Score>().score;
+                FindObjectOfType<GameController>().UpdateScoreUI();
+            }
         }
     }
 

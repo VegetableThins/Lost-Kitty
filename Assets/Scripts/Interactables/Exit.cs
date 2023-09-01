@@ -17,6 +17,8 @@ public class Exit : MonoBehaviour
     {
         if (collision.gameObject.tag == "PlayerMovePoint")
         {
+            GameController.playerScore += 1;
+            FindObjectOfType<GameController>().UpdateScoreUI();
             StartCoroutine(gameController.LoadNextLevel(exitDelay));
         }
     }

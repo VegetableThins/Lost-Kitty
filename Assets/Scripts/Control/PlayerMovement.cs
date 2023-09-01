@@ -93,9 +93,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log("being destroyed...");
-        Debug.Log(GetComponentInChildren<Camera>());
         GetComponentInChildren<Camera>().transform.parent = null;
+
+        if(GetComponent<Health>().isAlive == false)
+            gameController.GameOver();
         //show deeth scene here
     }
 }
